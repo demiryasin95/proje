@@ -1,0 +1,341 @@
+@{
+    ViewBag.Title = "Derslik Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 fade-in">
+    <div>
+        <h1 class="h3 mb-0 text-main fw-bold">
+            <i class="fas fa-school me-2 text-primary"></i>Derslik Yönetimi
+        </h1>
+        <p class="text-secondary mb-0">Derslikleri yönetin, düzenleyin ve yeni derslikler ekleyin</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassroomModal">
+            <i class="fas fa-plus me-2"></i>Yeni Derslik
+        </button>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4 fade-in">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-filter me-2"></i>Arama ve Filtreleme
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0 ps-0" id="classroomSearch" placeholder="Derslik ara (ad, tür)...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="classroomPageSize">
+                    <option value="5">5 Kayıt</option>
+                    <option value="10" selected>10 Kayıt</option>
+                    <option value="20">20 Kayıt</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-outline-secondary w-100" id="refreshClassroomBtn" title="Yenile" onclick="loadClassrooms()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Classrooms Table -->
+<div class="card fade-in">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-list me-2"></i>Derslik Listesi
+        </h6>
+        <span class="badge bg-primary rounded-pill" id="classroomTotalInfo">
+            Yükleniyor...
+        </span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="classroomsTable">
+                <thead class="bg-light text-muted small fw-bold text-uppercase">
+                    <tr>
+                        <th>DERSLİK ADI</th>
+                        <th>TÜR</th>
+                        <th>KAPASİTE</th>
+                        <th>DURUM</th>
+                        <th class="text-end">İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="card-footer bg-transparent border-top d-flex align-items-center justify-content-between py-3">
+            <small class="text-muted" id="classroomPageInfo">Sayfa 1 / 1</small>
+            <nav>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" id="classroomPrevPage">
+                        <i class="fas fa-chevron-left me-1"></i>Önceki
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" id="classroomNextPage">
+                        Sonraki<i class="fas fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addClassroomModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Yeni Derslik</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClassroomForm">
+                    <div class="mb-3">
+                        <label class="form-label">Ad</label>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tür</label>
+                        <select class="form-select" name="Type" required>
+                            <option value="Science">Sayısal</option>
+                            <option value="Literature">Sözel</option>
+                            <option value="EqualWeight">Eşit Ağırlık</option>
+                            <option value="Language">Dil</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kapasite</label>
+                        <input type="number" class="form-control" name="Capacity" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="saveClassroomBtn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editClassroomModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Derslik Düzenle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editClassroomForm">
+                    <input type="hidden" name="Id" id="editId">
+                    <div class="mb-3">
+                        <label class="form-label">Ad</label>
+                        <input type="text" class="form-control" name="Name" id="editName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tür</label>
+                        <select class="form-select" name="Type" id="editType" required>
+                            <option value="Science">Sayısal</option>
+                            <option value="Literature">Sözel</option>
+                            <option value="EqualWeight">Eşit Ağırlık</option>
+                            <option value="Language">Dil</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kapasite</label>
+                        <input type="number" class="form-control" name="Capacity" id="editCapacity" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="updateClassroomBtn">Güncelle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Classroom Confirmation Modal -->
+<div class="modal fade" id="deleteClassroomModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <h5 class="modal-title" style="color: white !important;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Derslik Silme Onayı
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="deleteClassroomId">
+                <div class="text-center mb-3">
+                    <i class="fas fa-school fa-3x text-danger mb-3"></i>
+                    <p class="mb-2 fs-5">Bu dersliği silmek istediğinizden emin misiniz?</p>
+                    <p class="text-muted small mb-0">Bu işlem geri alınamaz.</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4 shadow-sm" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>İptal
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 shadow-sm" id="confirmDeleteClassroomBtn">
+                    <i class="fas fa-trash me-2"></i>Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function melodyHas(fn){ return window.MelodyTheme && typeof window.MelodyTheme[fn] === 'function'; }
+        function toast(msg, type){
+            if (melodyHas('showToast')) { window.MelodyTheme.showToast(msg, type); }
+            else { if (typeof window.showAlert === 'function') window.showAlert(msg, type === 'error' ? 'danger' : (type || 'info')); }
+        }
+
+        function loadClassrooms() {
+            $.get('/Admin/GetClassrooms', function (res) {
+                const tbody = $('#classroomsTable tbody');
+                tbody.empty();
+                if (!res || !res.success) {
+                    tbody.append('<tr><td colspan="4" class="text-muted">Derslik yüklenemedi.</td></tr>');
+                    return;
+                }
+                if (res.classrooms.length === 0) {
+                    tbody.append('<tr><td colspan="4" class="text-muted">Henüz kayıt yok.</td></tr>');
+                    return;
+                }
+                $('#classroomTotalInfo').text('TOPLAM ' + res.classrooms.length + ' KAYIT BULUNDU');
+                res.classrooms.forEach(function (c) {
+                    const typeBadge = window.getClassroomTypeBadge ? window.getClassroomTypeBadge(c.type) : `<span class="badge rounded-pill bg-secondary">${c.type}</span>`;
+                    tbody.append(
+                        `<tr>
+                            <td>${c.name}</td>
+                            <td>${typeBadge}</td>
+                            <td>${c.capacity}</td>
+                            <td><span class="badge rounded-pill bg-success">Aktif</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-icon btn-indigo rounded-3 shadow-sm me-1 btn-edit-classroom" data-id="${c.id}" data-name="${c.name}" data-type="${c.type}" data-capacity="${c.capacity}" title="Düzenle"><i class="fas fa-edit text-white"></i></button>
+                                <button class="btn btn-sm btn-icon btn-danger rounded-3 shadow-sm btn-delete-classroom" data-id="${c.id}" title="Sil"><i class="fas fa-trash text-white"></i></button>
+                            </td>
+                         </tr>`
+                    );
+                });
+                applyClassroomSearchAndPaginate();
+            });
+        }
+
+        function applyClassroomSearchAndPaginate(){
+            var term = ($('#classroomSearch').val()||'').toLowerCase();
+            var size = parseInt($('#classroomPageSize').val(),10)||10;
+            var rows = $('#classroomsTable tbody tr');
+            var filtered = [];
+            rows.each(function(){
+                var t = $(this).text().toLowerCase();
+                var match = term.length<1 || t.indexOf(term)>=0;
+                $(this).toggle(match);
+                if(match) filtered.push(this);
+            });
+            var total = filtered.length;
+            var pages = Math.max(1, Math.ceil(total/size));
+            window.classroomCurrentPage = window.classroomCurrentPage || 1;
+            if(window.classroomCurrentPage>pages) window.classroomCurrentPage = pages;
+            filtered.forEach(function(row, idx){
+                var show = idx >= (window.classroomCurrentPage-1)*size && idx < window.classroomCurrentPage*size;
+                $(row).toggle(show);
+            });
+            $('#classroomPageInfo').text('Sayfa '+window.classroomCurrentPage+' / '+pages+' • Toplam '+total+' kayıt');
+        }
+
+        $(document).on('click', '.btn-edit-classroom', function(){
+            const $el = $(this);
+            $('#editId').val($el.data('id'));
+            $('#editName').val($el.data('name'));
+            $('#editType').val($el.data('type'));
+            $('#editCapacity').val($el.data('capacity'));
+            new bootstrap.Modal(document.getElementById('editClassroomModal')).show();
+        });
+
+        $(document).on('click', '.btn-delete-classroom', function(){
+            var id = $(this).data('id');
+            $('#deleteClassroomId').val(id);
+            new bootstrap.Modal(document.getElementById('deleteClassroomModal')).show();
+        });
+
+        // Confirm delete button
+        $('#confirmDeleteClassroomBtn').on('click', function(){
+            var id = parseInt($('#deleteClassroomId').val(), 10);
+            if (!id) return;
+
+            // Close modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('deleteClassroomModal'));
+            if (modal) modal.hide();
+
+            toast('Derslik siliniyor...', 'info');
+            
+            $.post('/Admin/DeleteClassroom', { id: id }, function (res) {
+                if (res && res.success) {
+                    toast('Derslik silindi', 'success');
+                    loadClassrooms();
+                } else {
+                    toast(res.message || 'Silme sırasında hata oluştu', 'error');
+                }
+            }).fail(function (xhr) {
+                toast('Silme isteği başarısız oldu', 'error');
+                console.error('DeleteClassroom error', xhr.status, xhr.responseText);
+            });
+        });
+
+        $(function () {
+            loadClassrooms();
+            $('#classroomSearch, #classroomPageSize').on('input change', function(){ window.classroomCurrentPage=1; applyClassroomSearchAndPaginate(); });
+            $('#classroomPrevPage').on('click', function(){ if((window.classroomCurrentPage||1)>1){ window.classroomCurrentPage--; applyClassroomSearchAndPaginate(); } });
+            $('#classroomNextPage').on('click', function(){ window.classroomCurrentPage=(window.classroomCurrentPage||1)+1; applyClassroomSearchAndPaginate(); });
+
+            $('#saveClassroomBtn').on('click', function () {
+                const fd = $('#addClassroomForm').serialize();
+                $.post('/Admin/AddClassroom', fd, function (res) {
+                    if (res && res.success) {
+                        (bootstrap.Modal.getInstance(document.getElementById('addClassroomModal')) || new bootstrap.Modal(document.getElementById('addClassroomModal'))).hide();
+                        $('#addClassroomForm')[0].reset();
+                        loadClassrooms();
+                        toast('Derslik eklendi', 'success');
+                    } else {
+                        toast(res.message || 'Kayıt sırasında hata oluştu', 'error');
+                    }
+                }).fail(function (xhr) {
+                    toast('Kayıt isteği başarısız oldu', 'error');
+                    console.error('AddClassroom error', xhr.status, xhr.responseText);
+                });
+            });
+
+            $('#updateClassroomBtn').on('click', function () {
+                const fd = $('#editClassroomForm').serialize();
+                $.post('/Admin/UpdateClassroom', fd, function (res) {
+                    if (res && res.success) {
+                        (bootstrap.Modal.getInstance(document.getElementById('editClassroomModal')) || new bootstrap.Modal(document.getElementById('editClassroomModal'))).hide();
+                        loadClassrooms();
+                        toast('Derslik güncellendi', 'success');
+                    } else {
+                        toast(res.message || 'Güncelleme sırasında hata oluştu', 'error');
+                    }
+                }).fail(function (xhr) {
+                    toast('Güncelleme isteği başarısız oldu', 'error');
+                    console.error('UpdateClassroom error', xhr.status, xhr.responseText);
+                });
+            });
+        });
+    </script>
+    <style></style>
+}

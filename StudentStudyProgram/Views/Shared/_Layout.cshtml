@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Öğrenci Etüt Programı</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- OLD CSS FILES - Replaced by Unified Theme V3 -->
+    <!-- <link href="~/Content/site.css?v=2.0" rel="stylesheet" /> -->
+    <!-- <link href="~/Content/melody-theme.css?v=2.0" rel="stylesheet" /> -->
+    <!-- <link href="~/Content/melody-overlay.css?v=1.0" rel="stylesheet" /> -->
+    <!-- <link href="~/Content/dark-mode.css?v=2.0" rel="stylesheet" /> -->
+
+    <!-- Modern Calendar CSS - Kept for specific calendar functionality -->
+    <link href="~/Content/modern-calendar.css?v=29" rel="stylesheet" />
+
+    <!-- Unified Theme V4 - Supports all layouts with dark mode (LOAD LAST) -->
+    <link href="@Url.Content("~/Content/admin-theme.v4.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+
+    <style>
+        /* Disable transform effects ONLY on buttons - preserve sidebar and other elements */
+        .btn, .btn:active, .btn:hover, .btn:focus,
+        button, button:active, button:hover, button:focus,
+        [class*="btn-"], [class*="btn-"]:active, [class*="btn-"]:hover, [class*="btn-"]:focus,
+        input[type="button"], input[type="submit"],
+        input[type="button"]:active, input[type="submit"]:active,
+        input[type="button"]:hover, input[type="submit"]:hover,
+        a.btn, a.btn:active, a.btn:hover,
+        .page-link, .page-link:active, .page-link:hover, .page-link:focus,
+        .dropdown-item, .dropdown-item:active, .dropdown-item:hover {
+            transform: none !important;
+            -webkit-transform: none !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+            -webkit-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+    </style>
+
+    <script>
+        // Disable transform effects on buttons only
+        (function() {
+            function disableTransforms() {
+                const elements = document.querySelectorAll('.btn, button, [class*="btn-"], input[type="button"], input[type="submit"], .page-link, .dropdown-item');
+                elements.forEach(function(el) {
+                    el.style.setProperty('transform', 'none', 'important');
+                    el.style.setProperty('-webkit-transform', 'none', 'important');
+                });
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', disableTransforms);
+            } else {
+                disableTransforms();
+            }
+            
+            window.addEventListener('load', disableTransforms);
+            setTimeout(disableTransforms, 100);
+            
+            console.log('Transform effects disabled on buttons');
+        })();
+    </script>
+
+    @RenderSection("styles", required: false)
+</head>
+<body class="app-layout">
+    <form id="__antiForgeryForm" class="d-none">@Html.AntiForgeryToken()</form>
+    
+    <!-- Modern Floating Navbar -->
+    <div class="container mt-3">
+        <nav class="navbar navbar-expand-lg melody-topbar rounded-4 border">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand d-flex align-items-center gap-3" href="@Url.Action("Index","Home")">
+                    <span class="melody-brand-badge">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </span>
+                    <span>Öğrenci Etüt Programı</span>
+                </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        @Html.ActionLink("Ana Sayfa", "Index", "Home", new { area = "" }, new { @class = "nav-link melody-nav-link" })
+                    </li>
+                    
+                    @if (User.IsInRole("Student") || User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink("Ders Notlarım", "Index", "Notes", new { area = "" }, new { @class = "nav-link melody-nav-link" })
+                        </li>
+                    }
+                    
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink("Admin Paneli", "Index", "Admin", new { area = "" }, new { @class = "nav-link melody-nav-link" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Bildirim Testi", "Test", "Notification", new { area = "" }, new { @class = "nav-link melody-nav-link" })
+                        </li>
+                    }
+                </ul>
+                
+                @Html.Partial("_LoginPartial")
+                
+                <div class="d-flex align-items-center ms-3">
+                    <button class="btn btn-link nav-link melody-nav-link text-dark p-0 border-0" id="themeToggle" title="Temayı Değiştir" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-moon-stars-fill fs-5" id="themeIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container-fluid mt-4 app-content">
+        @RenderBody()
+    </div>
+
+    <footer class="melody-footer text-center">
+        <div class="container">
+            <p class="mb-0">&copy; @DateTime.Now.Year - Öğrenci Etüt Programı Yönetim Sistemi</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        // DARK MODE LOGIC
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const htmlElement = document.documentElement;
+            
+            // Check saved theme or default
+            const savedTheme = localStorage.getItem('melody-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                setDarkTheme();
+            }
+
+            function setDarkTheme() {
+                htmlElement.setAttribute('data-theme', 'dark');
+                if(themeIcon) {
+                    themeIcon.classList.remove('bi-moon-stars-fill');
+                    themeIcon.classList.add('bi-sun-fill');
+                    themeIcon.classList.add('text-warning');
+                }
+            }
+
+            function setLightTheme() {
+                htmlElement.removeAttribute('data-theme');
+                if(themeIcon) {
+                    themeIcon.classList.remove('bi-sun-fill');
+                    themeIcon.classList.remove('text-warning');
+                    themeIcon.classList.add('bi-moon-stars-fill');
+                }
+            }
+
+            if(themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const isDark = htmlElement.hasAttribute('data-theme');
+                    if (isDark) {
+                        setLightTheme();
+                        localStorage.setItem('melody-theme', 'light');
+                    } else {
+                        setDarkTheme();
+                        localStorage.setItem('melody-theme', 'dark');
+                    }
+                });
+            }
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            try {
+                if (!window.jQuery) return;
+                function getToken() {
+                    var el = document.querySelector('#logoutForm input[name="__RequestVerificationToken"]');
+                    return el ? el.value : null;
+                }
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        try {
+                            var method = (settings && settings.type ? settings.type : '').toUpperCase();
+                            if (method !== 'POST') return;
+                            var token = getToken();
+                            if (token) xhr.setRequestHeader('RequestVerificationToken', token);
+                        } catch (e) { }
+                    }
+                });
+            } catch (e) { }
+        })();
+    </script>
+    <script src="~/Scripts/push-notifications.js?v=1.0"></script>
+    
+    @RenderSection("scripts", required: false)
+</body>
+</html>

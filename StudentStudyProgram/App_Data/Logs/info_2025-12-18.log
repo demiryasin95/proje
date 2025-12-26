@@ -1,0 +1,10 @@
+[INFO] 2025-12-18 00:52:37 - Toplu müsaitlik güncellendi: Teacher=2, Slots=2
+[INFO] 2025-12-18 00:58:12 - Toplu müsaitlik güncellendi: Teacher=2, Slots=0
+[INFO] 2025-12-18 22:01:31 - BulkSetTeacherAvailability başladı: TeacherId=2
+[INFO] 2025-12-18 22:01:31 - SlotsJson: [{"DayOfWeek":1,"TimeSlotId":1},{"DayOfWeek":1,"TimeSlotId":4}]
+[INFO] 2025-12-18 22:01:31 - Decode edilen slot sayısı: 2
+[INFO] 2025-12-18 22:01:31 - Silinen mevcut kayıt sayısı: 0
+[INFO] 2025-12-18 22:01:31 - Eklenen müsaitlik: TeacherId=2, Day=1, TimeSlot=1
+[INFO] 2025-12-18 22:01:31 - Eklenen müsaitlik: TeacherId=2, Day=1, TimeSlot=4
+[INFO] 2025-12-18 22:01:31 - SaveChanges başarılı! Toplam 2 kayıt eklendi.
+[INFO] 2025-12-18 22:01:31 - Veritabanında kayıtlı müsaitlik sayısı: 2

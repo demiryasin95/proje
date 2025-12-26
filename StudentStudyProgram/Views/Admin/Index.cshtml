@@ -1,0 +1,861 @@
+@{
+    ViewBag.Title = "Yönetim Paneli";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section styles {
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        /* Removed overflow rules to prevent redirect loop */
+
+        .admin-dashboard {
+            --dash-ink: #0f172a;
+            --dash-muted: #5b6b84;
+            --dash-line: rgba(15, 23, 42, 0.08);
+            --dash-card: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 247, 255, 0.92) 100%);
+            --dash-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            --dash-accent: #14b8a6;
+            --dash-accent-2: #f97316;
+            --dash-accent-3: #3b82f6;
+            --dash-accent-4: #22c55e;
+            font-family: "Space Grotesk", "Bahnschrift", "Segoe UI", sans-serif;
+            color: var(--dash-ink);
+            position: relative;
+            border-radius: 24px;
+            padding: 1.5rem;
+            background-color: #eef2f8;
+            background-image: linear-gradient(135deg, #edf2ff 0%, #fbe7d6 40%, #e7f1ff 100%);
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            /* overflow handled by parent admin-content */
+        }
+
+        .admin-dashboard::before {
+            content: "";
+            position: absolute;
+            inset: -40% auto auto -10%;
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.22) 0%, rgba(20, 184, 166, 0) 65%);
+            pointer-events: none;
+        }
+
+        .admin-dashboard::after {
+            content: "";
+            position: absolute;
+            right: -160px;
+            bottom: -160px;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, rgba(249, 115, 22, 0) 70%);
+            pointer-events: none;
+        }
+
+        .admin-dashboard > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dash-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+            padding: 1.4rem 1.6rem;
+            border-radius: 20px;
+            border: 1px solid var(--dash-line);
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.86) 0%, rgba(244, 247, 255, 0.78) 100%);
+            box-shadow: var(--dash-shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-hero__title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .dash-hero__title .h3,
+        .dash-hero .h3 {
+            font-size: clamp(1.4rem, 2.2vw, 2.2rem);
+            letter-spacing: -0.02em;
+            color: var(--dash-ink);
+        }
+
+        .dash-hero__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .dash-hero .btn {
+            border-radius: 999px;
+            padding: 0.45rem 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .dash-hero .btn-outline-primary {
+            border-color: rgba(15, 23, 42, 0.18);
+            color: var(--dash-ink);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .dash-hero .btn-outline-primary:hover {
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+        }
+
+        .dash-hero .btn-outline-secondary {
+            border-color: rgba(15, 23, 42, 0.12);
+            color: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .dash-hero .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .dash-hero .btn-primary {
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .dash-hero .btn:hover {
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+        }
+
+        .dash-card,
+        .admin-dashboard .card {
+            border-radius: 18px;
+            border: 1px solid var(--dash-line);
+            background: var(--dash-card);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .admin-dashboard .card:hover {
+            box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+        }
+
+        .dash-card .card-body,
+        .admin-dashboard .card .card-body {
+            padding: 1.25rem;
+        }
+
+        .dash-stat,
+        .dash-stats .card {
+            position: relative;
+            overflow: hidden;
+            animation: dash-rise 0.7s ease both;
+        }
+
+        .dash-stat::before,
+        .dash-stats .card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--stat-accent, var(--dash-accent));
+        }
+
+        .dash-stat--blue { --stat-accent: #3b82f6; }
+        .dash-stat--green { --stat-accent: #22c55e; }
+        .dash-stat--teal { --stat-accent: #14b8a6; }
+        .dash-stat--amber { --stat-accent: #f59e0b; }
+
+        .dash-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            color: var(--dash-muted);
+        }
+
+        .dash-stats .text-uppercase {
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            color: var(--dash-muted);
+        }
+
+        .dash-stats {
+            align-items: stretch;
+        }
+
+        .dash-stats > [class*="col"] {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .dash-stats > [class*="col"] > .card {
+            width: 100%;
+            flex: 1 1 auto;
+        }
+
+        .dash-stats .card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .dash-stats .h5 {
+            font-size: 1.7rem;
+            letter-spacing: -0.02em;
+        }
+
+        .dash-stats .text-muted.text-xs span.text-success,
+        .dash-stats .text-muted.text-xs span.text-info,
+        .dash-stats .text-muted.text-xs span.text-warning {
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            font-weight: 600;
+            margin-right: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .dash-stats .text-muted.text-xs span.text-success {
+            background: rgba(34, 197, 94, 0.12);
+            color: #15803d;
+        }
+
+        .dash-stats .text-muted.text-xs span.text-info {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0284c7;
+        }
+
+        .dash-stats .text-muted.text-xs span.text-warning {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+        }
+
+        .dash-stat .dash-icon,
+        .dash-stats .icon-shape {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px !important;
+            display: grid;
+            place-items: center;
+            background: rgba(15, 23, 42, 0.06) !important;
+            color: var(--stat-accent, var(--dash-accent)) !important;
+            box-shadow: none;
+        }
+
+        .dash-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dash-trend span {
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.12);
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .dash-trend .text-info {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0284c7;
+        }
+
+        .dash-trend .text-warning {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+        }
+
+        .dash-trend .text-success,
+        .dash-trend .text-info,
+        .dash-trend .text-warning {
+            margin-right: 0;
+        }
+
+        .dash-panel .card-header,
+        .dash-panels .card-header,
+        .dash-actions .card-header {
+            border: none;
+            background: transparent;
+            padding: 1.1rem 1.4rem 0.4rem;
+        }
+
+        .dash-panel .card-body,
+        .dash-panels .card-body,
+        .dash-actions .card-body {
+            padding: 0.8rem 1.4rem 1.3rem !important;
+        }
+
+        .dash-panel h6,
+        .dash-panels h6,
+        .dash-actions h6 {
+            letter-spacing: 0.02em;
+        }
+
+        .dash-panel .btn-outline-primary,
+        .dash-panels .btn-outline-primary {
+            border-radius: 999px;
+        }
+
+        .dash-actions-grid .dash-action {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--dash-line);
+            text-decoration: none;
+            color: var(--dash-ink);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .dash-actions-grid .dash-action i {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
+        }
+
+        .dash-action--green i { background: rgba(34, 197, 94, 0.12); color: #16a34a; }
+        .dash-action--blue i { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+        .dash-action--teal i { background: rgba(20, 184, 166, 0.12); color: #0f766e; }
+        .dash-action--amber i { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+
+        .dash-actions-grid .dash-action:hover {
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+        }
+
+        .dash-actions .melody-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            width: 100%;
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid var(--dash-line) !important;
+            color: var(--dash-ink) !important;
+            text-align: left;
+            text-decoration: none !important;
+            box-shadow: none !important;
+        }
+
+        .dash-actions .melody-btn:hover {
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12) !important;
+        }
+
+        .dash-actions .melody-btn i {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            margin-right: 0 !important;
+        }
+
+        .dash-actions .btn-primary i {
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
+        }
+
+        .dash-actions .btn-success i {
+            background: rgba(34, 197, 94, 0.12);
+            color: #16a34a;
+        }
+
+        .dash-actions .btn-info i {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0284c7;
+        }
+
+        .dash-actions .btn-warning i {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+        }
+
+        #recentSessions .melody-hover {
+            background: rgba(248, 250, 255, 0.78);
+            border: 1px solid var(--dash-line);
+            border-radius: 14px;
+        }
+
+        #recentSessions .melody-hover:hover {
+            border-color: rgba(15, 23, 42, 0.18);
+        }
+
+        .chart-container {
+            border-radius: 16px;
+            padding: 0.75rem;
+            border: 1px solid var(--dash-line);
+            background: rgba(15, 23, 42, 0.03);
+        }
+
+        .progress {
+            border-radius: 999px;
+            overflow: hidden;
+            height: 8px;
+            background: rgba(15, 23, 42, 0.08);
+        }
+
+        .progress .progress-bar {
+            border-radius: 999px;
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+        }
+
+        #realTimeIndicator.badge {
+            border-radius: 999px;
+            padding: 0.35rem 0.6rem;
+            background: rgba(34, 197, 94, 0.16) !important;
+            color: #0f766e !important;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-left: 0.6rem !important;
+            margin-right: auto !important;
+        }
+
+        .blink {
+            animation: blink-animation 1.5s infinite;
+        }
+
+        @@keyframes blink-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @@keyframes dash-rise {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .dash-animate {
+            animation: dash-rise 0.7s ease both;
+        }
+
+        .dash-delay-1 { animation-delay: 0.08s; }
+        .dash-delay-2 { animation-delay: 0.16s; }
+        .dash-delay-3 { animation-delay: 0.24s; }
+
+        .dash-stats > div:nth-child(1) .card { --stat-accent: #3b82f6; animation-delay: 0.05s; }
+        .dash-stats > div:nth-child(2) .card { --stat-accent: #22c55e; animation-delay: 0.1s; }
+        .dash-stats > div:nth-child(3) .card { --stat-accent: #14b8a6; animation-delay: 0.15s; }
+        .dash-stats > div:nth-child(4) .card { --stat-accent: #f59e0b; animation-delay: 0.2s; }
+
+        .dash-actions .card {
+            animation: dash-rise 0.7s ease both;
+            animation-delay: 0.12s;
+        }
+
+        .dash-panels .card {
+            animation: dash-rise 0.7s ease both;
+        }
+
+        .dash-panels-primary > div:nth-child(1) .card { animation-delay: 0.18s; }
+        .dash-panels-primary > div:nth-child(2) .card { animation-delay: 0.24s; }
+        .dash-panels-secondary > div:nth-child(1) .card { animation-delay: 0.22s; }
+        .dash-panels-secondary > div:nth-child(2) .card { animation-delay: 0.28s; }
+
+        .dash-panels-secondary {
+            margin-bottom: 0;
+        }
+
+        .dash-panels-secondary > [class*="col"] {
+            margin-bottom: 0 !important;
+        }
+
+        @@media (max-width: 992px) {
+            .admin-dashboard { padding: 1.1rem; }
+            .dash-hero { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+            .dash-hero__actions { width: 100%; }
+        }
+
+        @@media (max-width: 576px) {
+            .dash-actions-grid .dash-action { padding: 0.85rem; }
+            .dash-hero { padding: 1.1rem; }
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .dash-animate,
+            .dash-actions-grid .dash-action,
+            .dash-actions .melody-btn,
+            .dash-hero .btn,
+            .dash-stats .card,
+            .dash-actions .card,
+            .dash-panels .card {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Real-time update pulse animation */
+        .pulse-update {
+            animation: pulseGlow 0.6s ease-in-out;
+        }
+
+        @@keyframes pulseGlow {
+            0% { color: inherit; }
+            50% { color: #10B981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+            100% { color: inherit; }
+        }
+
+        /* Card flash animation for real-time updates */
+        .updating-flash {
+            animation: cardFlash 0.8s ease-in-out;
+        }
+
+        @@keyframes cardFlash {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            50% { box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.6); border-color: #10B981; }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+}
+
+<div class="admin-dashboard">
+
+<!-- Page Header -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4 dash-hero dash-animate">
+    <h1 class="h3 mb-0 text-gray-800">Yönetim Paneli</h1>
+    <div class="d-flex gap-2 dash-hero__actions">
+        <button class="btn btn-sm btn-outline-primary" onclick="toggleRealTimeUpdates()" id="realTimeToggle" title="Canlı güncellemeyi aç/kapat">
+            <i class="fas fa-sync-alt"></i> <span id="realTimeText">Canlı</span>
+        </button>
+        <button class="btn btn-sm btn-success shadow-sm" onclick="exportToExcel()" title="Excel olarak indir">
+            <i class="fas fa-file-excel fa-sm text-white-50"></i> Excel İndir
+        </button>
+        <button class="btn btn-sm btn-primary shadow-sm" onclick="showReportModal()" title="PDF rapor oluştur">
+            <i class="fas fa-file-pdf fa-sm text-white-50"></i> PDF İndir
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row dash-stats">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card melody-card shadow-sm h-100 py-3 border-0">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Toplam Öğrenci
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStudents">0</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
+                            <span>Geçen aya göre</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card melody-card shadow-sm h-100 py-3 border-0">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Toplam Öğretmen
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalTeachers">0</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 2.15%</span>
+                            <span>Geçen aya göre</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-success text-white rounded-circle shadow">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card melody-card shadow-sm h-100 py-3 border-0">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Bugünkü Etütler
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="todaySessions">0</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-info mr-2"><i class="fa fa-arrow-up"></i> 5.72%</span>
+                            <span>Geçen aya göre</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card melody-card shadow-sm h-100 py-3 border-0">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Toplam Derslik
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalClassrooms">0</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-warning mr-2"><i class="fa fa-arrow-up"></i> 1.10%</span>
+                            <span>Geçen aya göre</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4 dash-actions">
+    <div class="col-12">
+        <div class="card melody-card shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-bolt mr-2"></i>Hızlı İşlemler
+                </h6>
+            </div>
+            <div class="card-body pt-0">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <a href="@Url.Action("Students", "Admin")" class="btn btn-primary btn-block btn-pill melody-btn">
+                            <i class="fas fa-user-plus mr-2"></i> Öğrenci İşlemleri
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="@Url.Action("Teachers", "Admin")" class="btn btn-success btn-block btn-pill melody-btn">
+                            <i class="fas fa-chalkboard-teacher mr-2"></i> Öğretmen İşlemleri
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-info btn-block btn-pill melody-btn">
+                            <i class="fas fa-calendar-alt mr-2"></i> Etüt Takvimi
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="@Url.Action("Classrooms", "Admin")" class="btn btn-warning btn-block btn-pill melody-btn">
+                            <i class="fas fa-door-open mr-2"></i> Derslik İşlemleri
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Tables Row -->
+<div class="row dash-panels dash-panels-primary">
+    <!-- Recent Sessions -->
+    <div class="col-lg-8 mb-4">
+        <div class="card melody-card shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-activity mr-2"></i>Son Etütler
+                </h6>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-arrow-right mr-1"></i>Tümünü Gör
+                </a>
+            </div>
+            <div class="card-body pt-0">
+                <div id="recentSessions" class="text-center text-muted py-4">
+                    <i class="fas fa-spinner fa-spin fs-1"></i>
+                    <p class="mt-2">Yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Summary -->
+    <div class="col-lg-4 mb-4">
+        <div class="card melody-card shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-pie mr-2"></i>Bu Hafta Özeti
+                </h6>
+            </div>
+            <div class="card-body pt-0">
+                <div class="chart-container mb-4" style="position: relative; height: 200px;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-primary">Bu Hafta</div>
+                        <div class="h5 font-weight-bold" id="thisWeekSessions">0</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-success">Bu Ay</div>
+                        <div class="h5 font-weight-bold" id="thisMonthSessions">0</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-info">Toplam</div>
+                        <div class="h5 font-weight-bold" id="totalSessions">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Charts Row -->
+<div class="row dash-panels dash-panels-secondary">
+    <!-- Weekly Activity Chart -->
+    <div class="col-lg-8 mb-4">
+        <div class="card melody-card shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-line mr-2"></i>Haftalık Etüt Aktivitesi
+                </h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">Görünüm:</div>
+                        <a class="dropdown-item" href="#" onclick="updateChartView('daily')">Günlük</a>
+                        <a class="dropdown-item" href="#" onclick="updateChartView('weekly')">Haftalık</a>
+                        <a class="dropdown-item" href="#" onclick="updateChartView('monthly')">Aylık</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pt-0">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="weeklyActivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-lg-4 mb-4">
+        <div class="card melody-card shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Hızlı İstatistikler
+                </h6>
+            </div>
+            <div class="card-body pt-0">
+                <div class="mb-4">
+                    <div class="small text-gray-600 mb-1">Ortalama Katılım Oranı</div>
+                    <div class="h4 font-weight-bold text-primary" id="averageAttendanceRate">0%</div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="small text-gray-600 mb-1">En Popüler Derslik</div>
+                    <div class="h5 font-weight-bold text-success" id="popularClassroom">-</div>
+                </div>
+                <div class="mb-4">
+                    <div class="small text-gray-600 mb-1">En Aktif Öğretmen</div>
+                    <div class="h5 font-weight-bold text-info" id="activeTeacher">-</div>
+                </div>
+                <div>
+                    <div class="small text-gray-600 mb-1">Ortalama Etüt Süresi</div>
+                    <div class="h5 font-weight-bold text-warning" id="averageDuration">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title d-flex align-items-center" id="reportModalLabel">
+                    <i class="fas fa-file-pdf me-2"></i>PDF Rapor Oluştur
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label for="reportStartDate" class="form-label fw-semibold">
+                            <i class="fas fa-calendar-alt text-primary me-1"></i>Başlangıç Tarihi
+                        </label>
+                        <input type="date" class="form-control" id="reportStartDate" required>
+                        <small class="form-text text-muted">Rapor için başlangıç tarihini seçin</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportEndDate" class="form-label fw-semibold">
+                            <i class="fas fa-calendar-check text-primary me-1"></i>Bitiş Tarihi
+                        </label>
+                        <input type="date" class="form-control" id="reportEndDate" required>
+                        <small class="form-text text-muted">Rapor için bitiş tarihini seçin</small>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle me-2 mt-1"></i>
+                            <div>
+                                <strong>Rapor İçeriği:</strong>
+                                <ul class="mb-0 mt-2 ps-3">
+                                    <li>Özet istatistikler</li>
+                                    <li>Öğrenci listesi ve detayları</li>
+                                    <li>Öğretmen listesi ve detayları</li>
+                                    <li>Devam oranları</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>İptal
+                </button>
+                <button type="button" class="btn btn-danger" onclick="generateReport(); return false;">
+                    <i class="fas fa-download me-1"></i>Raporu İndir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="@Url.Content("~/Scripts/admin-dashboard.js")?v=20241224v3"></script>
+}

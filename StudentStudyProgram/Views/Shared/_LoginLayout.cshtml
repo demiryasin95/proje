@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Öğrenci Etüt Programı</title>
+    
+    <!-- Use CDN with optimization -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- Bootstrap CSS - use CDN with SRI for integrity -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons - keep CDN as it's optimized and has fallback -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- OLD LOGIN CSS - Replaced by Unified Theme V3 -->
+    <!-- <link href="~/Content/login.css" rel="stylesheet" /> -->
+
+    <!-- Unified Theme V4 - Supports all layouts with dark mode (LOAD LAST) -->
+    <link href="@Url.Content("~/Content/admin-theme.v4.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+
+    <style>
+        /* Disable transform effects ONLY on buttons - preserve other elements */
+        .btn, .btn:active, .btn:hover, .btn:focus,
+        button, button:active, button:hover, button:focus,
+        [class*="btn-"], [class*="btn-"]:active, [class*="btn-"]:hover, [class*="btn-"]:focus,
+        input[type="button"], input[type="submit"],
+        input[type="button"]:active, input[type="submit"]:active,
+        input[type="button"]:hover, input[type="submit"]:hover,
+        a.btn, a.btn:active, a.btn:hover,
+        .page-link, .page-link:active, .page-link:hover, .page-link:focus,
+        .dropdown-item, .dropdown-item:active, .dropdown-item:hover {
+            transform: none !important;
+            -webkit-transform: none !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+            -webkit-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+    </style>
+
+    <script>
+        // Disable transform effects on buttons only
+        (function() {
+            function disableTransforms() {
+                const elements = document.querySelectorAll('.btn, button, [class*="btn-"], input[type="button"], input[type="submit"], .page-link, .dropdown-item');
+                elements.forEach(function(el) {
+                    el.style.setProperty('transform', 'none', 'important');
+                    el.style.setProperty('-webkit-transform', 'none', 'important');
+                });
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', disableTransforms);
+            } else {
+                disableTransforms();
+            }
+            
+            window.addEventListener('load', disableTransforms);
+            setTimeout(disableTransforms, 100);
+            
+            console.log('Transform effects disabled on buttons');
+        })();
+    </script>
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <script>
+        // DARK MODE LOGIC
+        (function() {
+            const htmlElement = document.documentElement;
+
+            // Check saved theme or default
+            const savedTheme = localStorage.getItem('melody-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                htmlElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
+    @RenderBody()
+
+    <!-- Scripts - use CDN with async/defer for better performance -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

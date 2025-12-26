@@ -1,0 +1,421 @@
+@{
+    ViewBag.Title = "Öğretmen Müsaitlik Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<!-- Page Header with Melody Theme -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4 melody-fade-in">
+    <div>
+        <h1 class="h3 mb-0 melody-text-gradient">
+            <i class="fas fa-calendar-check me-2"></i>Öğretmen Müsaitlik Yönetimi
+        </h1>
+        <p class="text-muted mb-0 small">
+            <i class="fas fa-info-circle me-1"></i>
+            <strong>Genel müsaitlik takvimi:</strong> Burada belirlenen saatler tüm haftalar için geçerlidir.
+            <small class="fst-italic">Örnek: Pazartesi 1. ders müsait = Her Pazartesi 1. ders müsait</small>
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary melody-btn melody-shadow-sm" onclick="saveAllAvailabilities()">
+            <i class="fas fa-save me-2"></i>Tümünü Kaydet
+        </button>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <!-- Teacher Selection -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card melody-card shadow-sm border-0">
+                <div class="card-body">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-user-tie text-primary me-2"></i>Öğretmen Seçin
+                    </label>
+                    <select class="form-select melody-form-control" id="teacherSelect" onchange="loadTeacherAvailability()">
+                        <option value="">-- Öğretmen seçin --</option>
+                    </select>
+                    <div class="mt-3 text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Yeşil: Müsait | Gri: Müsait değil
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card melody-card shadow-sm border-0">
+                <div class="card-header melody-card-header py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 melody-text-gradient">
+                            <i class="fas fa-bolt me-2"></i>Hızlı İşlemler
+                        </h6>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-success melody-btn" onclick="selectAll()">
+                                <i class="fas fa-check-double me-1"></i>Hepsini Seç
+                            </button>
+                            <button class="btn btn-outline-danger melody-btn" onclick="clearAll()">
+                                <i class="fas fa-times me-1"></i>Hepsini Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(1)">
+                                <i class="fas fa-calendar-day me-1"></i>Pazartesi
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(2)">
+                                <i class="fas fa-calendar-day me-1"></i>Salı
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(3)">
+                                <i class="fas fa-calendar-day me-1"></i>Çarşamba
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(4)">
+                                <i class="fas fa-calendar-day me-1"></i>Perşembe
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(5)">
+                                <i class="fas fa-calendar-day me-1"></i>Cuma
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(6)">
+                                <i class="fas fa-calendar-day me-1"></i>Cumartesi
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-outline-primary" onclick="selectDay(7)">
+                                <i class="fas fa-calendar-day me-1"></i>Pazar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Availability Grid -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card melody-card shadow-sm border-0">
+                <div class="card-header melody-card-header py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 melody-text-gradient">
+                            <i class="fas fa-th me-2"></i>Müsaitlik Takvimi
+                        </h6>
+                        <span class="badge bg-info text-white">
+                            <i class="fas fa-repeat me-1"></i>Tüm Haftalar İçin Geçerli
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="availabilityGrid" class="table-responsive">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-user-tie fa-3x mb-3 opacity-25"></i>
+                            <p>Lütfen bir öğretmen seçin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentTeacherId = null;
+        let timeSlots = [];
+        let availabilities = new Set();
+        const dayNames = ['', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
+        $(document).ready(function() {
+            loadTeachers();
+            loadTimeSlots();
+        });
+
+        function loadTeachers() {
+            $.get('@Url.Action("GetTeachers", "Admin")', function(response) {
+                if (response.success) {
+                    const select = $('#teacherSelect');
+                    select.empty().append('<option value="">-- Öğretmen seçin --</option>');
+                    response.teachers.forEach(function(teacher) {
+                        select.append(`<option value="${teacher.id}">${teacher.fullName} (${teacher.branch || '-'})</option>`);
+                    });
+                }
+            });
+        }
+
+        function loadTimeSlots() {
+            $.get('@Url.Action("GetTimeSlots", "Admin")', function(response) {
+                if (response.success) {
+                    timeSlots = response.timeSlots.filter(ts => !ts.isBreak && !ts.isLunch);
+                }
+            });
+        }
+
+        function loadTeacherAvailability() {
+            const teacherId = $('#teacherSelect').val();
+            if (!teacherId) {
+                $('#availabilityGrid').html(`
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-user-tie fa-3x mb-3 opacity-25"></i>
+                        <p>Lütfen bir öğretmen seçin</p>
+                    </div>
+                `);
+                return;
+            }
+
+            currentTeacherId = parseInt(teacherId);
+            availabilities.clear();
+
+            $.get('@Url.Action("GetTeacherAvailabilities", "Admin")', { teacherId: teacherId }, function(response) {
+                if (response.success) {
+                    response.availabilities.forEach(function(av) {
+                        availabilities.add(`${av.dayOfWeek}-${av.timeSlotId}`);
+                    });
+                    renderGrid();
+                }
+            });
+        }
+
+        function renderGrid() {
+            if (timeSlots.length === 0) {
+                setTimeout(renderGrid, 100);
+                return;
+            }
+
+            let html = '<table class="table table-bordered mb-0 availability-table">';
+            html += '<thead class="table-light"><tr><th style="width: 150px;">Saat</th>';
+            
+            for (let day = 1; day <= 7; day++) {
+                html += `<th class="text-center">${dayNames[day]}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            timeSlots.forEach(function(slot) {
+                html += `<tr><td class="fw-bold">${slot.name}<br><small class="text-muted">${slot.startTime} - ${slot.endTime}</small></td>`;
+                
+                for (let day = 1; day <= 7; day++) {
+                    const key = `${day}-${slot.id}`;
+                    const isAvailable = availabilities.has(key);
+                    const bgClass = isAvailable ? 'bg-success bg-opacity-10' : '';
+                    const icon = isAvailable ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-muted opacity-25"></i>';
+                    
+                    html += `<td class="text-center availability-cell ${bgClass}"
+                                 data-day="${day}"
+                                 data-timeslot="${slot.id}"
+                                 onclick="toggleAvailability(${day}, ${slot.id})"
+                                 style="cursor: pointer;">
+                                 ${icon}
+                             </td>`;
+                }
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            $('#availabilityGrid').html(html);
+        }
+
+        function toggleAvailability(day, timeSlotId) {
+            if (!currentTeacherId) return;
+
+            const key = `${day}-${timeSlotId}`;
+            if (availabilities.has(key)) {
+                availabilities.delete(key);
+            } else {
+                availabilities.add(key);
+            }
+
+            renderGrid();
+        }
+
+        function selectAll() {
+            if (!currentTeacherId) {
+                showToast('Lütfen önce bir öğretmen seçin', 'warning');
+                return;
+            }
+
+            timeSlots.forEach(function(slot) {
+                for (let day = 1; day <= 7; day++) {
+                    availabilities.add(`${day}-${slot.id}`);
+                }
+            });
+
+            renderGrid();
+            showToast('Tüm saatler seçildi', 'success');
+        }
+
+        function clearAll() {
+            if (!currentTeacherId) {
+                showToast('Lütfen önce bir öğretmen seçin', 'warning');
+                return;
+            }
+
+            if (confirm('Tüm müsaitlik bilgileri silinecek. Emin misiniz?')) {
+                availabilities.clear();
+                renderGrid();
+                showToast('Tüm saatler temizlendi', 'info');
+            }
+        }
+
+        function selectDay(day) {
+            if (!currentTeacherId) {
+                showToast('Lütfen önce bir öğretmen seçin', 'warning');
+                return;
+            }
+
+            timeSlots.forEach(function(slot) {
+                availabilities.add(`${day}-${slot.id}`);
+            });
+
+            renderGrid();
+            showToast(`${dayNames[day]} için tüm saatler seçildi`, 'success');
+        }
+
+        function saveAllAvailabilities() {
+            if (!currentTeacherId) {
+                showToast('Lütfen önce bir öğretmen seçin', 'warning');
+                return;
+            }
+
+            const slots = Array.from(availabilities).map(function(key) {
+                const [day, timeSlotId] = key.split('-').map(Number);
+                return { DayOfWeek: day, TimeSlotId: timeSlotId };
+            });
+            console.log('Slots JSON:', JSON.stringify(slots));
+
+            $.ajax({
+                url: '@Url.Action("BulkSetTeacherAvailability", "Admin")',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="__RequestVerificationToken"]').val(),
+                    '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    teacherId: currentTeacherId,
+                    slotsJson: JSON.stringify(slots)
+                },
+                success: function(response) {
+                    if (response.success) {
+                        showToast(response.message || 'Müsaitlikler başarıyla kaydedildi!', 'success');
+                    } else {
+                        showToast(response.message || 'Kaydetme başarısız oldu.', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ Save error:', error);
+                    console.error('Response:', xhr.responseText);
+                    showToast('Kaydetme sırasında bir hata oluştu', 'error');
+                }
+            });
+        }
+
+        function showToast(message, type) {
+            // Remove any existing modal
+            $('#availabilityAlertModal').remove();
+            
+            // Determine icon and colors based on type
+            let icon, bgColor, textColor, btnColor;
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle" style="font-size: 3rem;"></i>';
+                    bgColor = '#10B981';
+                    textColor = '#065F46';
+                    btnColor = 'btn-success';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle" style="font-size: 3rem;"></i>';
+                    bgColor = '#EF4444';
+                    textColor = '#991B1B';
+                    btnColor = 'btn-danger';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle" style="font-size: 3rem;"></i>';
+                    bgColor = '#F59E0B';
+                    textColor = '#92400E';
+                    btnColor = 'btn-warning';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle" style="font-size: 3rem;"></i>';
+                    bgColor = '#3B82F6';
+                    textColor = '#1E40AF';
+                    btnColor = 'btn-primary';
+            }
+            
+            const modalHtml = `
+                <div class="modal fade" id="availabilityAlertModal" tabindex="-1" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                            <div class="modal-body text-center p-5">
+                                <div class="mb-4" style="color: ${bgColor};">
+                                    ${icon}
+                                </div>
+                                <h4 class="mb-3 fw-bold" style="color: ${textColor};">
+                                    ${type === 'success' ? 'Başarılı!' : type === 'error' ? 'Hata!' : type === 'warning' ? 'Uyarı!' : 'Bilgi'}
+                                </h4>
+                                <p class="text-muted mb-4" style="font-size: 1rem; line-height: 1.6;">${message}</p>
+                                <button type="button" class="btn ${btnColor} px-5 py-2 rounded-pill shadow-sm"
+                                        data-bs-dismiss="modal" style="min-width: 120px;">
+                                    <i class="fas fa-check me-1"></i>Tamam
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('availabilityAlertModal'));
+            modal.show();
+            
+            $('#availabilityAlertModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+        }
+    </script>
+
+    <style>
+        .availability-table {
+            font-size: 0.9rem;
+        }
+
+        .availability-table th {
+            background: linear-gradient(135deg, #9485E4 0%, #7B6BC7 100%);
+            color: white;
+            font-weight: 600;
+            padding: 12px 8px;
+        }
+
+        .availability-table td {
+            padding: 12px 8px;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+
+        .availability-cell:hover {
+            background: #F3F1FF !important;
+            box-shadow: 0 2px 8px rgba(148, 133, 228, 0.2);
+        }
+
+        .availability-cell i {
+            font-size: 1.2rem;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+    </style>
+}

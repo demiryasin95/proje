@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="tr" class="admin-mode">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Öğrenci Etüt Programı Admin</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- OLD CSS FILES - Commented out, now using admin-theme.v3.css -->
+    <!-- <link href="@Url.Content("~/Content/admin.css")?v=@DateTime.Now.Ticks" rel="stylesheet"> -->
+    <!-- <link href="@Url.Content("~/Content/modern-admin.css")?v=@DateTime.Now.Ticks" rel="stylesheet"> -->
+    <!-- <link href="@Url.Content("~/Content/melody-theme.css")?v=@DateTime.Now.Ticks" rel="stylesheet"> -->
+    <!-- <link href="@Url.Content("~/Content/melody-overlay.css")?v=@DateTime.Now.Ticks" rel="stylesheet"> -->
+    <!-- <link href="@Url.Content("~/Content/dark-mode.css")?v=@DateTime.Now.Ticks" rel="stylesheet"> -->
+    <!-- Skeleton Loader CSS -->
+    <link href="@Url.Content("~/Content/skeleton-loader.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+    <!-- Toast Notifications CSS -->
+    <link href="@Url.Content("~/Content/toast-notifications.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+    <!-- Widgets and Bulk Operations CSS -->
+    <link href="@Url.Content("~/Content/widgets-and-bulk.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+    <!-- Admin Theme V4 - Complete Design System with Sidebar Styles -->
+    <link href="@Url.Content("~/Content/admin-theme.v4.css")?v=@DateTime.Now.Ticks" rel="stylesheet">
+
+    <style>
+        /* SIDEBAR FIX: Ensure sidebar nav links are visible - high priority */
+        body.admin-layout .sidebar-nav .nav-item {
+            display: block !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            padding: 0.875rem 1rem !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            text-decoration: none !important;
+            border-radius: 8px !important;
+            font-weight: 500 !important;
+            font-size: 0.9375rem !important;
+            transition: background-color 0.2s ease, color 0.2s ease !important;
+            position: relative !important;
+            overflow: visible !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link:hover {
+            background: rgba(94, 114, 228, 0.15) !important;
+            color: rgba(255, 255, 255, 1) !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link.active {
+            background: linear-gradient(90deg, rgba(94, 114, 228, 0.25) 0%, rgba(94, 114, 228, 0.1) 100%) !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #5E72E4 !important;
+            font-weight: 600 !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link i {
+            font-size: 1.125rem !important;
+            min-width: 24px !important;
+            text-align: center !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link:hover i,
+        body.admin-layout .sidebar-nav .nav-link.active i {
+            color: #ffffff !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-link span {
+            display: inline !important;
+            color: inherit !important;
+        }
+        
+        /* Sidebar header fix */
+        body.admin-layout .sidebar-header {
+            padding: 1.75rem 1.5rem !important;
+            background: linear-gradient(135deg, rgba(94, 114, 228, 0.12) 0%, rgba(94, 114, 228, 0.05) 100%) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        body.admin-layout .sidebar-header h4 {
+            font-size: 1.125rem !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+        }
+        
+        body.admin-layout .sidebar-header h4 i {
+            color: #ffffff !important;
+        }
+        
+        /* Admin sidebar container */
+        body.admin-layout .admin-sidebar {
+            width: 280px !important;
+            height: 100vh !important;
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%) !important;
+            z-index: 1000 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Sidebar nav container */
+        body.admin-layout .sidebar-nav {
+            list-style: none !important;
+            padding: 1rem 0 !important;
+            margin: 0 !important;
+        }
+        
+        body.admin-layout .sidebar-nav .nav-item {
+            margin: 0.25rem 0.75rem !important;
+        }
+        
+        /* Nav divider */
+        body.admin-layout .nav-divider {
+            height: 1px !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            margin: 1rem 1.5rem !important;
+        }
+        
+        /* Profile image fix - ensure visibility and remove avatar text */
+        body.admin-layout .admin-top-nav .dropdown-toggle img,
+        body.admin-layout img.rounded-circle,
+        .admin-top-nav img {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+        }
+        
+        /* Hide avatar initials/text if present */
+        body.admin-layout .admin-top-nav .dropdown-toggle .avatar-initials,
+        body.admin-layout .admin-top-nav .dropdown-toggle span.avatar-text,
+        body.admin-layout .navbar .avatar-initials,
+        body.admin-layout .navbar .user-avatar-text {
+            display: none !important;
+        }
+        
+        /* Hide ALL pseudo-elements in dropdown toggle - prevents "P1" text */
+        body.admin-layout .admin-top-nav .nav-link.dropdown-toggle::before,
+        body.admin-layout .admin-top-nav .nav-link.dropdown-toggle::after,
+        body.admin-layout .navbar .nav-link.dropdown-toggle::before,
+        body.admin-layout .navbar .nav-link.dropdown-toggle::after,
+        body.admin-layout .dropdown-toggle::before,
+        body.admin-layout .dropdown-toggle::after {
+            display: none !important;
+            content: none !important;
+            text-indent: -9999px !important;
+            font-size: 0 !important;
+            line-height: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        
+        /* Ensure only image is shown in dropdown toggle */
+        body.admin-layout .admin-top-nav .nav-link.dropdown-toggle {
+            gap: 0.5rem !important;
+            min-width: auto !important;
+            min-height: auto !important;
+            overflow: hidden !important;
+            text-indent: 0 !important;
+            font-size: 0 !important;
+        }
+        
+        /* Hide username span - show only image */
+        body.admin-layout .admin-top-nav .nav-link.dropdown-toggle span.d-none.d-md-block,
+        body.admin-layout .admin-top-nav .dropdown-toggle > span {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Force show only the image */
+        body.admin-layout .admin-top-nav .nav-link.dropdown-toggle img {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 32px !important;
+            height: 32px !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        /* Disable transform effects ONLY on buttons - preserve sidebar and other elements */
+        .btn, .btn:active, .btn:hover, .btn:focus,
+        button, button:active, button:hover, button:focus,
+        [class*="btn-"], [class*="btn-"]:active, [class*="btn-"]:hover, [class*="btn-"]:focus,
+        input[type="button"], input[type="submit"],
+        input[type="button"]:active, input[type="submit"]:active,
+        input[type="button"]:hover, input[type="submit"]:hover,
+        a.btn, a.btn:active, a.btn:hover,
+        .page-link, .page-link:active, .page-link:hover, .page-link:focus,
+        .dropdown-item, .dropdown-item:active, .dropdown-item:hover {
+            transform: none !important;
+            -webkit-transform: none !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+            -webkit-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+    </style>
+    
+    <script>
+        // AGGRESSIVE: Force disable all transform effects
+        (function() {
+            function disableTransforms() {
+                const elements = document.querySelectorAll('.btn, button, [class*="btn-"], input[type="button"], input[type="submit"], a[href]');
+                elements.forEach(function(el) {
+                    el.style.setProperty('transform', 'none', 'important');
+                    el.style.setProperty('-webkit-transform', 'none', 'important');
+                });
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', disableTransforms);
+            } else {
+                disableTransforms();
+            }
+            
+            window.addEventListener('load', disableTransforms);
+            setTimeout(disableTransforms, 100);
+            setTimeout(disableTransforms, 500);
+            
+            console.log('Transform effects disabled on all buttons');
+        })();
+        
+        // Remove avatar initials/placeholder text from dropdown
+        (function() {
+            function removeAvatarText() {
+                // Remove any pseudo-element content
+                const dropdownToggle = document.querySelector('.admin-top-nav .dropdown-toggle');
+                if (dropdownToggle) {
+                    dropdownToggle.style.setProperty('--bs-dropdown-toggle-icon', 'none', 'important');
+                    // Hide Bootstrap's dropdown arrow
+                    const style = document.createElement('style');
+                    style.innerHTML = `
+                        .admin-top-nav .dropdown-toggle::after {
+                            display: none !important;
+                            content: none !important;
+                        }
+                        .admin-top-nav .dropdown-toggle::before {
+                            display: none !important;
+                            content: none !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', removeAvatarText);
+            } else {
+                removeAvatarText();
+            }
+            
+            window.addEventListener('load', removeAvatarText);
+            setTimeout(removeAvatarText, 100);
+        })();
+    </script>
+    
+    @RenderSection("styles", required: false)
+</head>
+<body class="admin-layout">
+    <div class="admin-container">
+        <form id="__antiForgeryForm" class="d-none">@Html.AntiForgeryToken()</form>
+                <!-- Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header d-flex align-items-center justify-content-between">
+                <h4 class="text-white mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Etüt Sistemi
+                </h4>
+                <button class="btn btn-sm btn-outline-light sidebar-toggle d-none d-lg-inline" type="button" title="Menüyü daralt">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Index", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Students", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Öğrenciler">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        <span>Öğrenciler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Teachers", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Öğretmenler">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        <span>Öğretmenler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("TimeSlots", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Ders Saatleri">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Ders Saatleri</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Classrooms", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Derslikler">
+                        <i class="fas fa-school me-2"></i>
+                        <span>Derslikler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("TeacherAvailability", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Öğretmen Müsaitliği">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        <span>Öğretmen Müsaitliği</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Statistics", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="İstatistikler">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        <span>İstatistikler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Users", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Kullanıcılar">
+                        <i class="fas fa-users me-2"></i>
+                        <span>Kullanıcılar</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("DatabaseBackup", "Admin")" data-bs-toggle="tooltip" data-bs-placement="right" title="Yedekleme">
+                        <i class="fas fa-database me-2"></i>
+                        <span>Yedekleme</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Index", "Home")" data-bs-toggle="tooltip" data-bs-placement="right" title="Etüt Takvimi">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <span>Etüt Takvimi</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()" data-bs-toggle="tooltip" data-bs-placement="right" title="Çıkış">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        <span>Çıkış</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Top Navigation -->
+            <nav class="admin-top-nav navbar navbar-expand-lg navbar-light">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-primary sidebar-toggle d-lg-none" type="button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="ms-auto d-flex align-items-center">
+                        <div class="nav-item dropdown position-static">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="padding: 0.25rem 0.5rem; min-width: 40px; min-height: 40px;">
+                                <img id="profile-avatar-img"
+                                     src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=5E72E4&color=fff&size=64&bold=true"
+                                     class="rounded-circle"
+                                     alt="Profile"
+                                     style="width: 36px; height: 36px; object-fit: cover; display: block;">
+                            </a>
+                            
+                            <!-- Modern Profile Dropdown -->
+                            <div class="dropdown-menu dropdown-menu-end p-0" style="width: 320px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                                <!-- Header with Gradient -->
+                                <div class="position-relative" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem 1.5rem 1.5rem; border-radius: 12px 12px 0 0;">
+                                    <div style="position: absolute; top: -20px; right: 20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                                    <div style="position: absolute; bottom: -10px; left: 10px; width: 50px; height: 50px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
+                                    
+                                    <div class="d-flex align-items-center position-relative">
+                                        <div class="position-relative me-3">
+                                            <img id="dropdown-avatar-img"
+                                                 src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=5E72E4&color=fff&size=64&bold=true"
+                                                 class="rounded-circle"
+                                                 alt="Profile"
+                                                 style="width: 64px; height: 64px; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                            <div style="position: absolute; bottom: 2px; right: 2px; width: 16px; height: 16px; background: #10b981; border: 2px solid white; border-radius: 50%;"></div>
+                                        </div>
+                                        <div class="text-white overflow-hidden">
+                                            <h6 class="mb-0 fw-bold" id="dropdown-user-name" style="font-size: 1rem;">@User.Identity.Name</h6>
+                                            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.9;" id="dropdown-user-email">@User.Identity.Name</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Menu Items -->
+                                <div class="p-2">
+                                    <a class="dropdown-item d-flex align-items-center px-3 py-2 mb-1" href="@Url.Action("Index", "Manage")" style="border-radius: 10px; transition: all 0.2s ease;">
+                                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-user-circle" style="color: #667eea; font-size: 16px;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.9rem; color: #2d3748;">Profil Düzenle</div>
+                                            <div style="font-size: 0.75rem; color: #a0aec0;">Profil bilgilerini yönet</div>
+                                        </div>
+                                    </a>
+                                    
+                                    <a class="dropdown-item d-flex align-items-center px-3 py-2 mb-1" href="@Url.Action("Index", "Manage")" style="border-radius: 10px; transition: all 0.2s ease;">
+                                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-cog" style="color: #667eea; font-size: 16px;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.9rem; color: #2d3748;">Ayarlar</div>
+                                            <div style="font-size: 0.75rem; color: #a0aec0;">Sistem ayarları</div>
+                                        </div>
+                                    </a>
+                                    
+                                    <div class="dropdown-divider my-2" style="border-color: #e2e8f0;"></div>
+                                    
+                                    <a class="dropdown-item d-flex align-items-center px-3 py-2" href="javascript:document.getElementById('logoutForm').submit()" style="border-radius: 10px; transition: all 0.2s ease;">
+                                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15)); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-sign-out-alt" style="color: #ef4444; font-size: 16px;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.9rem; color: #ef4444;">Çıkış Yap</div>
+                                            <div style="font-size: 0.75rem; color: #a0aec0;">Güvenli çıkış</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <style>
+                        .dropdown-item:hover {
+                            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08)) !important;
+                            transform: translateX(2px);
+                        }
+                    </style>
+                </div>
+            </nav>
+
+            <!-- Page Content -->
+            <main class="p-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Logout Form -->
+    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "d-none" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+
+    <!-- jQuery (must load before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            try {
+                if (!window.jQuery) return;
+                function getToken() {
+                    var el = document.querySelector('#logoutForm input[name="__RequestVerificationToken"]');
+                    return el ? el.value : null;
+                }
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        try {
+                            var method = (settings && settings.type ? settings.type : '').toUpperCase();
+                            if (method !== 'POST') return;
+                            var token = getToken();
+                            if (token) xhr.setRequestHeader('RequestVerificationToken', token);
+                        } catch (e) { }
+                    }
+                });
+            } catch (e) { }
+        })();
+    </script>
+    <!-- Chart.js UMD -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Custom JS -->
+    <script src="@Url.Content("~/Scripts/admin.js")"></script>
+    <!-- Melody Theme JS -->
+    <script src="@Url.Content("~/Scripts/melody-theme.js")"></script>
+    <!-- Skeleton Loader JS -->
+    <script src="@Url.Content("~/Scripts/skeleton-loader.js")"></script>
+    
+    <!-- Load user profile picture -->
+    <script>
+        (function() {
+            $.get('@Url.Action("GetProfile","Manage")', function(res){
+                if(res && res.success){
+                    // Update profile picture if exists
+                    if(res.profile.profilePictureUrl){
+                        var picUrl = res.profile.profilePictureUrl + '?t=' + new Date().getTime();
+                        $('#profile-avatar-img').attr('src', picUrl);
+                        $('#dropdown-avatar-img').attr('src', picUrl);
+                    }
+                    
+                    // Update display name if exists
+                    if(res.profile.displayName){
+                        $('#dropdown-user-name').text(res.profile.displayName);
+                    }
+                    
+                    // Update email if exists
+                    if(res.profile.email){
+                        $('#dropdown-user-email').text(res.profile.email);
+                    }
+                }
+            });
+        })();
+    </script>
+    <!-- Keyboard Shortcuts -->
+    <script src="@Url.Content("~/Scripts/keyboard-shortcuts.js")"></script>
+    <!-- Dark Mode -->
+    <script src="@Url.Content("~/Scripts/dark-mode.js")"></script>
+    <!-- Advanced Search -->
+    <script src="@Url.Content("~/Scripts/advanced-search.js")"></script>
+    <!-- Enhanced Loading -->
+    <script src="@Url.Content("~/Scripts/enhanced-loading.js")"></script>
+    <!-- Performance Optimizer -->
+    <script src="@Url.Content("~/Scripts/performance-optimizer.js")"></script>
+    <!-- Accessibility -->
+    <script src="@Url.Content("~/Scripts/accessibility.js")"></script>
+    
+    <!-- Enhanced Features -->
+    <!-- Toast Notifications -->
+    <script src="@Url.Content("~/Scripts/toast-notifications.js")"></script>
+    <!-- Widgets and Bulk Operations -->
+    <script src="@Url.Content("~/Scripts/widgets-and-bulk.js")"></script>
+    <!-- SignalR (optional - uncomment if SignalR is installed) -->
+    <!-- <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script> -->
+    <!-- <script src="~/signalr/hubs"></script> -->
+    <!-- <script src="@Url.Content("~/Scripts/signalr-notifications.js")"></script> -->
+    
+    <!-- Temporarily disabled fix-scrollbar.js -->
+    
+    @RenderSection("scripts", required: false)
+</body>
+</html>

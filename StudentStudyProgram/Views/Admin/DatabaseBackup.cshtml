@@ -1,0 +1,97 @@
+@{
+    ViewBag.Title = "Veritabanı Yedekleme";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Page Header with Melody Theme -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4 melody-fade-in">
+    <div>
+        <h1 class="h3 mb-0 melody-text-gradient">
+            <i class="bi bi-database me-2"></i>Veritabanı Yedekleme
+        </h1>
+        <p class="text-muted mb-0 small">Veritabanı yedeklerini oluşturun ve yönetin</p>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge melody-badge-translucent">
+            <i class="bi bi-shield-check me-2"></i>Güvenli Yedekleme
+        </span>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Backup Card -->
+    <div class="card melody-card shadow-sm border-0">
+        <div class="card-header melody-card-header py-3">
+            <h6 class="m-0 melody-text-gradient">
+                <i class="bi bi-hdd me-2"></i>Yedekleme İşlemleri
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info d-flex align-items-start" style="border-radius: 12px; border-left: 4px solid #0dcaf0;">
+                <i class="bi bi-info-circle-fill fs-5 me-3 text-info"></i>
+                <div>
+                    <strong>Bilgilendirme:</strong> Yedek dosyası <code>App_Data/Backups</code> klasörüne <code>.bak</code> uzantısıyla kaydedilecektir.
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-4">
+                <button class="btn btn-primary melody-btn melody-shadow-sm px-4" id="backupBtn">
+                    <i class="bi bi-database me-2"></i>Yedek Al
+                </button>
+            </div>
+
+            <div id="backupResult" class="mt-4"></div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(function () {
+            $('#backupBtn').on('click', function () {
+                var btn = $(this);
+                var originalHtml = btn.html();
+
+                // Button loading state
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Yedekleniyor...');
+
+                $.post('/Admin/BackupDatabase', function (res) {
+                    // Restore button
+                    btn.prop('disabled', false).html(originalHtml);
+
+                    if (res.success) {
+                        $('#backupResult').html(`
+                            <div class="alert alert-success d-flex align-items-start" style="border-radius: 12px; border-left: 4px solid #198754;">
+                                <i class="bi bi-check-circle-fill fs-5 me-3 text-success"></i>
+                                <div>
+                                    <strong>Başarılı!</strong> ${res.message || 'Yedekleme başarıyla tamamlandı.'}
+                                </div>
+                            </div>
+                        `);
+                    } else {
+                        $('#backupResult').html(`
+                            <div class="alert alert-danger d-flex align-items-start" style="border-radius: 12px; border-left: 4px solid #dc3545;">
+                                <i class="bi bi-exclamation-triangle-fill fs-5 me-3 text-danger"></i>
+                                <div>
+                                    <strong>Hata!</strong> ${res.message || 'Yedekleme sırasında bir hata oluştu.'}
+                                </div>
+                            </div>
+                        `);
+                    }
+                }).fail(function () {
+                    // Restore button on error
+                    btn.prop('disabled', false).html(originalHtml);
+
+                    $('#backupResult').html(`
+                        <div class="alert alert-danger d-flex align-items-start" style="border-radius: 12px; border-left: 4px solid #dc3545;">
+                            <i class="bi bi-exclamation-triangle-fill fs-5 me-3 text-danger"></i>
+                            <div>
+                                <strong>Hata!</strong> Sunucuya bağlanılamadı. Lütfen tekrar deneyin.
+                            </div>
+                        </div>
+                    `);
+                });
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,329 @@
+/* Student and teacher list layout adjustments */
+
+.melody-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.melody-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.melody-table th,
+.melody-table td {
+  padding: 0.65rem 0.75rem;
+  vertical-align: middle;
+}
+
+.melody-table-row td {
+  line-height: 1.2;
+}
+
+.melody-avatar-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.melody-avatar,
+.melody-profile-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f1f5f9;
+  border: 1px solid rgba(94, 114, 228, 0.25);
+}
+
+.melody-avatar-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.melody-student-name {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.melody-contact-info,
+.melody-date-info {
+  font-size: 0.85rem;
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.melody-action-buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.melody-action-buttons.btn-group {
+  gap: 0.35rem;
+}
+
+.melody-action-buttons.btn-group > .btn {
+  border-radius: 0.5rem;
+  margin-left: 0;
+}
+
+.melody-action-buttons .btn {
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.melody-action-buttons .btn i {
+  font-size: 0.85rem;
+}
+
+.melody-photo-upload {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.melody-photo-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(94, 114, 228, 0.35);
+  background: #f1f5f9;
+  display: block;
+}
+
+.melody-photo-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.6rem;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.melody-photo-upload:hover .melody-photo-overlay,
+.melody-photo-upload:focus-within .melody-photo-overlay {
+  opacity: 1;
+}
+
+.melody-photo-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #4c63d2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.melody-photo-btn:hover {
+  color: #5e72e4;
+}
+
+.melody-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.melody-badge-primary {
+  background: rgba(var(--melody-primary-rgb), 0.15);
+  color: var(--melody-primary);
+  border-color: rgba(var(--melody-primary-rgb), 0.35);
+}
+
+.melody-badge-success {
+  background: rgba(45, 206, 137, 0.15);
+  color: #1f9d68;
+  border-color: rgba(45, 206, 137, 0.35);
+}
+
+.melody-badge-info {
+  background: rgba(17, 205, 239, 0.18);
+  color: #0b9fb8;
+  border-color: rgba(17, 205, 239, 0.35);
+}
+
+.melody-badge-warning {
+  background: rgba(251, 99, 64, 0.18);
+  color: #cf4b2c;
+  border-color: rgba(251, 99, 64, 0.35);
+}
+
+.melody-badge-danger {
+  background: rgba(245, 54, 92, 0.18);
+  color: #c31e42;
+  border-color: rgba(245, 54, 92, 0.35);
+}
+
+.melody-badge-secondary {
+  background: rgba(108, 117, 125, 0.18);
+  color: #5a6268;
+  border-color: rgba(108, 117, 125, 0.35);
+}
+
+@media (max-width: 992px) {
+  .melody-table th,
+  .melody-table td {
+    padding: 0.6rem 0.5rem;
+  }
+
+  .melody-action-buttons .btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+
+  .melody-photo-upload {
+    width: 100px;
+    height: 100px;
+  }
+
+  .melody-photo-preview {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .melody-avatar-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .melody-avatar,
+  .melody-profile-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DISABLE ALL TRANSFORM EFFECTS ON BUTTONS AND INTERACTIVE ELEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Force disable transform on all buttons and interactive elements */
+.btn,
+.btn:hover,
+.btn:active,
+.btn:focus,
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:focus,
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:focus,
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:active,
+.btn-warning:focus,
+.btn-info,
+.btn-info:hover,
+.btn-info:active,
+.btn-info:focus,
+.btn-outline-primary,
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-outline-primary:focus,
+.btn-outline-secondary,
+.btn-outline-secondary:hover,
+.btn-outline-secondary:active,
+.btn-outline-danger,
+.btn-outline-danger:hover,
+.btn-outline-danger:active,
+.btn-outline-success,
+.btn-outline-success:hover,
+.btn-outline-success:active,
+.btn-light,
+.btn-light:hover,
+.btn-light:active,
+.btn-dark,
+.btn-dark:hover,
+.btn-dark:active,
+.btn-link,
+.btn-link:hover,
+.btn-link:active,
+.melody-action-buttons .btn,
+.melody-action-buttons .btn:hover,
+.melody-action-buttons .btn:active,
+.melody-action-buttons .btn:focus,
+.melody-photo-btn,
+.melody-photo-btn:hover,
+.melody-photo-btn:active,
+.melody-photo-btn:focus,
+.melody-badge,
+.melody-badge:hover,
+.melody-badge:active {
+    transform: none !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Additional override for any remaining transform animations on buttons */
+body .btn,
+body .btn:hover,
+body .btn:active,
+body .btn:focus,
+body button,
+body button:hover,
+body button:active,
+body button:focus,
+body input[type="button"],
+body input[type="submit"],
+body input[type="button"]:hover,
+body input[type="submit"]:hover,
+body input[type="button"]:active,
+body input[type="submit"]:active,
+body a[href],
+body a[href]:hover,
+body a[href]:active {
+    transform: none !important;
+}

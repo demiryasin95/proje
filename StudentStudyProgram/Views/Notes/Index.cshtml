@@ -1,0 +1,149 @@
+@{
+    ViewBag.Title = "Ders Notlarım";
+}
+
+@section styles {
+    <link href="~/Content/notes.css?v=1.0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+}
+
+<div class="container-fluid">
+    <div class="melody-toolbar">
+        <div class="d-flex align-items-center gap-3">
+            <div class="melody-brand-badge" style="width: 48px; height: 48px; border-radius: 14px;">
+                <i class="bi bi-journal-text" style="font-size: 1.5rem;"></i>
+            </div>
+            <h2 class="melody-toolbar-title">Ders Notlarım</h2>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <select id="categorySelect" class="form-select melody-select" style="min-width: 180px;">
+                <option value="">Tüm Dersler</option>
+            </select>
+            
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Not ara...">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+            
+            <button class="btn btn-primary melody-btn-primary" onclick="openNoteModal()">
+                <i class="bi bi-plus-circle me-2"></i>Yeni Not
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-4" id="notesContainer">
+        <div class="col-12 text-center text-muted py-5">
+            <i class="bi bi-journal-x" style="font-size: 4rem; opacity: 0.3;"></i>
+            <p class="mt-3">Henüz not eklenmemiş. Yeni not eklemek için yukarıdaki butonu kullanın.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-journal-plus me-2"></i><span id="modalTitle">Yeni Not</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="noteForm">
+                    @Html.AntiForgeryToken()
+                    
+                    <input type="hidden" id="noteId" value="">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Başlık</label>
+                        <input type="text" id="noteTitle" class="form-control" placeholder="Notunuza bir başlık verin..." required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ders/Branş</label>
+                            <select id="noteCategory" class="form-select" required>
+                                <option value="">Ders seçiniz...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                            <span>İçerik (Markdown destekli)</span>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="togglePreview()">
+                                <i class="bi bi-eye me-1"></i><span id="previewBtnText">Önizleme</span>
+                            </button>
+                        </label>
+                        <textarea id="noteContent" style="display: none;"></textarea>
+                        <div id="preview" class="border rounded p-3 markdown-preview" style="display: none; min-height: 300px; max-height: 500px; overflow-y: auto;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>İptal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveNote()">
+                    <i class="bi bi-save me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Note Modal -->
+<div class="modal fade" id="viewNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewNoteTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary" id="viewNoteCategory"></span>
+                    <small class="text-muted ms-3" id="viewNoteDates"></small>
+                </div>
+                <div id="viewNoteContent" class="markdown-preview"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="editNoteFromView()">
+                    <i class="bi bi-pencil me-1"></i>Düzenle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notu Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bu notu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-1"></i>Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script src="~/Scripts/notes.js?v=1.0"></script>
+}

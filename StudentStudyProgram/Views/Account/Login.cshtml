@@ -1,0 +1,106 @@
+@model StudentStudyProgram.Models.LoginViewModel
+@{
+    ViewBag.Title = "Giriş Yap";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+<div class="login-shell">
+    <div class="login-card">
+        <div class="login-card-header">
+            <div class="login-brand">
+                <div class="login-brand-badge">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div>
+                    <h1 class="login-title">Öğrenci Etüt Programı</h1>
+                    <p class="login-subtitle">Giriş yaparak devam edin</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-card-body">
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", autocomplete = "on" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 mb-3" })
+
+                <div class="mb-3">
+                    <div class="login-field-label">@Html.DisplayNameFor(m => m.Username)</div>
+                    <div class="input-group login-input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Kullanıcı adınızı girin", autofocus = "autofocus" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-3">
+                    <div class="login-field-label">@Html.DisplayNameFor(m => m.Password)</div>
+                    <div class="input-group login-input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Parolanızı girin", id = "passwordInput" })
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" tabindex="-1" aria-label="Parolayı göster/gizle">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                        @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label text-muted" })
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary login-primary-btn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="login-footnote">
+            Varsayılan: <strong>admin</strong> / <code>ChangeMe@2025!</code>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        (function () {
+            // Password toggle - Essential only
+            var btn = document.getElementById('togglePassword');
+            var input = document.getElementById('passwordInput');
+            if (btn && input) {
+                btn.addEventListener('click', function () {
+                    var isPwd = input.type === 'password';
+                    input.type = isPwd ? 'text' : 'password';
+                    btn.innerHTML = isPwd ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+                });
+            }
+
+            // Prevent double submission - Essential
+            var isSubmitting = false;
+            var form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    isSubmitting = true;
+                    
+                    // Simple loading state
+                    var submitBtn = document.querySelector('.login-primary-btn');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Giriş yapılıyor...';
+                    }
+                });
+            }
+        })();
+    </script>
+}

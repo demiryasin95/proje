@@ -1,0 +1,32 @@
+[INFO] 2025-12-19 20:24:14 - BulkSetTeacherAvailability başladı: TeacherId=2
+[INFO] 2025-12-19 20:24:14 - SlotsJson: []
+[INFO] 2025-12-19 20:24:14 - Decode edilen slot sayısı: 0
+[INFO] 2025-12-19 20:24:14 - Silinen mevcut kayıt sayısı: 68
+[INFO] 2025-12-19 20:24:14 - SaveChanges başarılı! Toplam 0 kayıt eklendi.
+[INFO] 2025-12-19 20:24:14 - Veritabanında kayıtlı müsaitlik sayısı: 0
+[INFO] 2025-12-19 20:24:21 - BulkSetTeacherAvailability başladı: TeacherId=2
+[INFO] 2025-12-19 20:24:21 - SlotsJson: [{"DayOfWeek":6,"TimeSlotId":1},{"DayOfWeek":6,"TimeSlotId":2},{"DayOfWeek":6,"TimeSlotId":4},{"DayOfWeek":6,"TimeSlotId":5},{"DayOfWeek":6,"TimeSlotId":7},{"DayOfWeek":6,"TimeSlotId":8},{"DayOfWeek":6,"TimeSlotId":10},{"DayOfWeek":6,"TimeSlotId":11},{"DayOfWeek":6,"TimeSlotId":13},{"DayOfWeek":6,"TimeSlotId":14},{"DayOfWeek":7,"TimeSlotId":1},{"DayOfWeek":7,"TimeSlotId":2},{"DayOfWeek":7,"TimeSlotId":4},{"DayOfWeek":7,"TimeSlotId":5},{"DayOfWeek":7,"TimeSlotId":7},{"DayOfWeek":7,"TimeSlotId":8},{"DayOfWeek":7,"TimeSlotId":10},{"DayOfWeek":7,"TimeSlotId":11},{"DayOfWeek":7,"TimeSlotId":13},{"DayOfWeek":7,"TimeSlotId":14}]
+[INFO] 2025-12-19 20:24:21 - Decode edilen slot sayısı: 20
+[INFO] 2025-12-19 20:24:21 - Silinen mevcut kayıt sayısı: 0
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=1
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=2
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=4
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=5
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=7
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=8
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=10
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=11
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=13
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=6, TimeSlot=14
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=1
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=2
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=4
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=5
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=7
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=8
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=10
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=11
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=13
+[INFO] 2025-12-19 20:24:21 - Eklenen müsaitlik: TeacherId=2, Day=7, TimeSlot=14
+[INFO] 2025-12-19 20:24:22 - SaveChanges başarılı! Toplam 20 kayıt eklendi.
+[INFO] 2025-12-19 20:24:22 - Veritabanında kayıtlı müsaitlik sayısı: 20

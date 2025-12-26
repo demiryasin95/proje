@@ -1,0 +1,42 @@
+[ERROR] 2025-12-25 01:06:08
+Message: Get notes error
+Exception: NotSupportedException
+Message: The specified type member 'ShortContent' is not supported in LINQ to Entities. Only initializers, entity members, and entity navigation properties are supported.
+StackTrace:    konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.MemberAccessTranslator.TypedTranslate(ExpressionConverter parent, MemberExpression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.TranslateExpression(Expression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.NewTranslator.TypedTranslate(ExpressionConverter parent, NewExpression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.TranslateExpression(Expression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.TranslateLambda(LambdaExpression lambda, DbExpression input)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.MethodCallTranslator.OneLambdaTranslator.Translate(ExpressionConverter parent, MethodCallExpression call, DbExpression& source, DbExpressionBinding& sourceBinding, DbExpression& lambda)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.MethodCallTranslator.SelectTranslator.Translate(ExpressionConverter parent, MethodCallExpression call)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.MethodCallTranslator.TypedTranslate(ExpressionConverter parent, MethodCallExpression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.TranslateExpression(Expression linq)
+   konum: System.Data.Entity.Core.Objects.ELinq.ExpressionConverter.Convert()
+   konum: System.Data.Entity.Core.Objects.ELinq.ELinqQueryState.GetExecutionPlan(Nullable`1 forMergeOption)
+   konum: System.Data.Entity.Core.Objects.ObjectQuery`1.<>c__DisplayClass43_0.<GetResultsAsync>b__1()
+   konum: System.Data.Entity.Core.Objects.ObjectContext.<ExecuteInTransactionAsync>d__156`1.MoveNext()
+--- Özel durumun oluşturulduğu önceki konumdan başlayan yığın izlemesinin sonu ---
+   konum: System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   konum: System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   konum: System.Data.Entity.SqlServer.DefaultSqlExecutionStrategy.<ExecuteAsyncImplementation>d__6`1.MoveNext()
+--- Özel durumun oluşturulduğu önceki konumdan başlayan yığın izlemesinin sonu ---
+   konum: System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   konum: System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   konum: System.Data.Entity.Utilities.TaskExtensions.CultureAwaiter`1.GetResult()
+   konum: System.Data.Entity.Core.Objects.ObjectQuery`1.<GetResultsAsync>d__43.MoveNext()
+--- Özel durumun oluşturulduğu önceki konumdan başlayan yığın izlemesinin sonu ---
+   konum: System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   konum: System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   konum: System.Data.Entity.Utilities.TaskExtensions.CultureAwaiter`1.GetResult()
+   konum: System.Data.Entity.Internal.LazyAsyncEnumerator`1.<FirstMoveNextAsync>d__9.MoveNext()
+--- Özel durumun oluşturulduğu önceki konumdan başlayan yığın izlemesinin sonu ---
+   konum: System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   konum: System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   konum: System.Data.Entity.Infrastructure.IDbAsyncEnumerableExtensions.<ForEachAsync>d__2`1.MoveNext()
+--- Özel durumun oluşturulduğu önceki konumdan başlayan yığın izlemesinin sonu ---
+   konum: System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   konum: System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   konum: System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   konum: StudentStudyProgram.Controllers.NotesController.<GetNotes>d__2.MoveNext() C:\Users\Yasin\Desktop\etut\StudentStudyProgram\Controllers\NotesController.cs içinde: satır 61
+--------------------------------------------------------------------------------
+
